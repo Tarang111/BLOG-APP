@@ -53,7 +53,7 @@ async function createUser(req, res) {
               email
       
           })
-        const sendingEmail=transporter.sendMail({
+        const sendingEmail= await transporter.sendMail({
            from:process.env.EMAIL_USER,
            to:email,
            subject:"Email Verification",
