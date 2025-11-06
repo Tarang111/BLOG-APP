@@ -10,7 +10,7 @@ require("dotenv").config()
 
 const port=process.env.PORT
 app.use(express.json())
-app.use(cors({origin:"*"}))
+app.use(cors({origin:"http://localhost:5173",credentials: true,}))
 app.get("/",(req,res)=>{
     res.send("hello ji")
 })
