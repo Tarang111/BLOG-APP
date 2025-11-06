@@ -59,7 +59,7 @@ async function createUser(req, res) {
            subject:"Email Verification",
            text:"PLEASE CLICK ON THE LINK TO VERIFY YOUR EMAIL",
            html:`<h1>Please click on verify</h1>
-           <a href="${process.env.FRONTENED_URL}/verifyemail/${token}">Verify Now!!!</a>`
+           <a href="https://trendingblogapp-kappa.vercel.app/verifyemail/${token}">Verify Now!!!</a>`
         })
       
     return res.status(200).json({
