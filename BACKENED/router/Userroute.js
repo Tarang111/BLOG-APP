@@ -1,5 +1,5 @@
 const express=require("express");
-const {createUser,updateUser,getAllUser,loginUser,deleteUser,getUserbyId, verifyUserviatoken, googleAuthentication, follow} = require("../controller/Userlogic");
+const {createUser,updateUser,getAllUser,loginUser,deleteUser,getUserbyId, verifyUserviatoken, googleAuthentication, follow} = require("../controller/userlogic");
 const verifyUser = require("../auth/auth");
 const route=express.Router();
 const upload = require("../utilis/multer");
