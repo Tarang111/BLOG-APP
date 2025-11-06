@@ -146,7 +146,7 @@ function deletetag(index)
                    formdata.append('draft',draft)
                    formdata.append('content',JSON.stringify(content))
                    formdata.append('tags',tags) 
-                 const res=await axios.post("http://localhost:3000/api/v1/blog",formdata,config)
+                 const res=await axios.post(`${import.meta.env.VITE_BACKENED_URL}/blog`,formdata,config)
                  toast.success(res.data.message)
                   return navigate("/")
                 
