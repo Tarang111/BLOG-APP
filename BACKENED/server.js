@@ -14,7 +14,7 @@ app.use(
   cors({
     origin: [
       "https://trendingblogapp-kappa.vercel.app", // your deployed frontend
-      "http://localhost:5173/" // for local dev
+      "http://localhost:5173" // for local dev
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
