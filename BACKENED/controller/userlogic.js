@@ -53,7 +53,13 @@ async function createUser(req, res) {
               email
       
           })
-        const sendingEmail= await transporter.sendMail({
+     res.status(200).json({
+      success: true,
+      message: "PLEASE VISIT YOUR EMAIL TO VERIFY",
+     
+ 
+    });
+       transporter.sendMail({
            from:process.env.EMAIL_USER,
            to:email,
            subject:"Email Verification",
@@ -62,12 +68,7 @@ async function createUser(req, res) {
            <a href="https://trendingblogapp-kappa.vercel.app/verifyemail/${token}">Verify Now!!!</a>`
         })
       
-    return res.status(200).json({
-      success: true,
-      message: "PLEASE VISIT YOUR EMAIL TO VERIFY",
-     
- 
-    });
+  
   } catch (err) {
      if(err.code==11000){
         return res.status(500).json({
