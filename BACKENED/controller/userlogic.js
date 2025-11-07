@@ -47,20 +47,20 @@ async function createUser(req, res) {
              username
             });
             
-          //   const token= await generateJwt({
-          //     name,
-          //     id:newuser._id,
-          //     email
+            const token= await generateJwt({
+              name,
+              id:newuser._id,
+              email
       
-          // })
-        // const sendingEmail= await transporter.sendMail({
-        //    from:process.env.EMAIL_USER,
-        //    to:email,
-        //    subject:"Email Verification",
-        //    text:"PLEASE CLICK ON THE LINK TO VERIFY YOUR EMAIL",
-        //    html:`<h1>Please click on verify</h1>
-        //    <a href="https://trendingblogapp-kappa.vercel.app/verifyemail/${token}">Verify Now!!!</a>`
-        // })
+          })
+        const sendingEmail= await transporter.sendMail({
+           from:process.env.EMAIL_USER,
+           to:email,
+           subject:"Email Verification",
+           text:"PLEASE CLICK ON THE LINK TO VERIFY YOUR EMAIL",
+           html:`<h1>Please click on verify</h1>
+           <a href="https://trendingblogapp-kappa.vercel.app/verifyemail/${token}">Verify Now!!!</a>`
+        })
       
     return res.status(200).json({
       success: true,
