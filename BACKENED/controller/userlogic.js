@@ -1,7 +1,9 @@
 const usermodel = require("../model/Userschema");
 const bcrypt=require("bcrypt");
+const { sendVerificationEmail } = require("../services/emailService");
+
 const { generateJwt,verifyToken } = require("../utilis/jwttokens");
-const  transporter  = require("../utilis/verifyUser");
+
 const { trusted } = require("mongoose");
 var admin = require("firebase-admin");
 const {getAuth} =require("firebase-admin/auth");
@@ -59,23 +61,9 @@ async function createUser(req, res) {
      
  
     });
-      transporter
-      .sendMail({
-        from: process.env.BREVO_SMTP_USER,
-        to: email,
-        subject: "Verify Your Email",
-        html: `
-          <h2>Welcome, ${name}!</h2>
-          <p>Please verify your email by clicking the link below:</p>
-          <a href="${process.env.FRONTEND_URL}/verifyemail/${token}" 
-             style="background:#4CAF50;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;">
-             Verify Email
-          </a>
-          <p>This link is valid for 1 hour.</p>
-        `,
-      })
-      .catch((err) => console.error("Email sending failed:", err));
       
+      sendVerificationEmail(name, email, token);
+
   
   } catch (err) {
      if(err.code==11000){
