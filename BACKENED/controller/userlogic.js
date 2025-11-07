@@ -59,14 +59,22 @@ async function createUser(req, res) {
      
  
     });
-       transporter.sendMail({
-           from:process.env.EMAIL_USER,
-           to:email,
-           subject:"Email Verification",
-           text:"PLEASE CLICK ON THE LINK TO VERIFY YOUR EMAIL",
-           html:`<h1>Please click on verify</h1>
-           <a href="https://trendingblogapp-kappa.vercel.app/verifyemail/${token}">Verify Now!!!</a>`
-        })
+      transporter
+      .sendMail({
+        from: process.env.BREVO_SMTP_USER,
+        to: email,
+        subject: "Verify Your Email",
+        html: `
+          <h2>Welcome, ${name}!</h2>
+          <p>Please verify your email by clicking the link below:</p>
+          <a href="${process.env.FRONTEND_URL}/verifyemail/${token}" 
+             style="background:#4CAF50;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;">
+             Verify Email
+          </a>
+          <p>This link is valid for 1 hour.</p>
+        `,
+      })
+      .catch((err) => console.error("Email sending failed:", err));
       
   
   } catch (err) {
