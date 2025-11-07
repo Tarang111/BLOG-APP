@@ -10,7 +10,17 @@ require("dotenv").config()
 
 const port=process.env.PORT
 app.use(express.json())
-app.use(cors())
+app.use(
+  cors({
+    origin: [
+      "https://trendingblogapp-kappa.vercel.app", // your deployed frontend
+      "http://localhost:5173" // for local dev
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
+  })
+);
+
 app.get("/",(req,res)=>{
     res.send("hello ji")
 })
