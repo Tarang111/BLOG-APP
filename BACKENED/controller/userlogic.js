@@ -223,7 +223,7 @@ try{
      }
          if(checkuser.googleAuth)
     {
-      res.status(400).json({
+     return res.status(400).json({
         success:false,
         message:"User Registered with Gooogle Try login with Google"
       })
@@ -247,7 +247,7 @@ try{
 
      if(!(checkuser.verify))
      {
-  res.status(500).json({
+return  res.status(500).json({
     success:true,
     message:"PLEASE VISIT MAIL AND VERIFY FIRST",
  
@@ -255,7 +255,7 @@ try{
 
      }
 
-   res.status(200).json({
+ return  res.status(200).json({
     success:true,
     message:"LOGGED IN SUCCESSFULLY",
   user:{
@@ -275,7 +275,7 @@ try{
 
 }
 catch{
-     res.status(500).json({
+    return res.status(500).json({
             success:false,
              message:"TRY AGAIN LATER"
       })
