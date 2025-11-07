@@ -9,22 +9,22 @@ const { verify } = require("jsonwebtoken");
 const ShortUniqueId = require('short-unique-id');
  const uid=new ShortUniqueId({length:5})
  require("dotenv").config()
-admin.initializeApp({
-  credential: admin.credential.cert({
-  "type": "service_account",
-  "project_id": process.env.FIREBASE_projectid,
-  "private_key_id":process.env.FIREBASE_private_key_id,
-  "private_key": process.env.FIREBASE_private_key.replace(/\\n/g, '\n'),
-  "client_email":process.env.FIREBASE_client_email,
-  "client_id": process.env.FIREBASE_client_id,
-  "auth_uri": process.env.FIREBASE_auth_uri,
-  "token_uri": process.env.FIREBASE_token_uri,
-  "auth_provider_x509_cert_url": process.env.FIREBASE_auth_provider_x509_cert_url,
-  "client_x509_cert_url": process.env.FIREBASE_client_x509_cert_url,
-  "universe_domain": "googleapis.com"
-}
-)
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert({
+//   "type": "service_account",
+//   "project_id": process.env.FIREBASE_projectid,
+//   "private_key_id":process.env.FIREBASE_private_key_id,
+//   "private_key": process.env.FIREBASE_private_key.replace(/\\n/g, '\n'),
+//   "client_email":process.env.FIREBASE_client_email,
+//   "client_id": process.env.FIREBASE_client_id,
+//   "auth_uri": process.env.FIREBASE_auth_uri,
+//   "token_uri": process.env.FIREBASE_token_uri,
+//   "auth_provider_x509_cert_url": process.env.FIREBASE_auth_provider_x509_cert_url,
+//   "client_x509_cert_url": process.env.FIREBASE_client_x509_cert_url,
+//   "universe_domain": "googleapis.com"
+// }
+// )
+// });
 async function createUser(req, res) {
   const { name, email, password } = req.body;
   
@@ -37,8 +37,8 @@ async function createUser(req, res) {
       });
     }
            const hashedpass= await bcrypt.hash(password,10)
-           const username=email.split("@")[0]+uid.randomUUID()
-           console.log(username);
+           const username=email.split("@")[0]+uid.rnd()
+        
            
            const newuser = await usermodel.create({ 
              name, 
@@ -47,20 +47,20 @@ async function createUser(req, res) {
              username
             });
             
-            const token= await generateJwt({
-              name,
-              id:newuser._id,
-              email
+          //   const token= await generateJwt({
+          //     name,
+          //     id:newuser._id,
+          //     email
       
-          })
-        const sendingEmail= await transporter.sendMail({
-           from:process.env.EMAIL_USER,
-           to:email,
-           subject:"Email Verification",
-           text:"PLEASE CLICK ON THE LINK TO VERIFY YOUR EMAIL",
-           html:`<h1>Please click on verify</h1>
-           <a href="https://trendingblogapp-kappa.vercel.app/verifyemail/${token}">Verify Now!!!</a>`
-        })
+          // })
+        // const sendingEmail= await transporter.sendMail({
+        //    from:process.env.EMAIL_USER,
+        //    to:email,
+        //    subject:"Email Verification",
+        //    text:"PLEASE CLICK ON THE LINK TO VERIFY YOUR EMAIL",
+        //    html:`<h1>Please click on verify</h1>
+        //    <a href="https://trendingblogapp-kappa.vercel.app/verifyemail/${token}">Verify Now!!!</a>`
+        // })
       
     return res.status(200).json({
       success: true,
