@@ -9,22 +9,22 @@ const { verify } = require("jsonwebtoken");
 const ShortUniqueId = require('short-unique-id');
  const uid=new ShortUniqueId({length:5})
  require("dotenv").config()
-// admin.initializeApp({
-//   credential: admin.credential.cert({
-//   "type": "service_account",
-//   "project_id": process.env.FIREBASE_projectid,
-//   "private_key_id":process.env.FIREBASE_private_key_id,
-//   "private_key": process.env.FIREBASE_private_key.replace(/\\n/g, '\n'),
-//   "client_email":process.env.FIREBASE_client_email,
-//   "client_id": process.env.FIREBASE_client_id,
-//   "auth_uri": process.env.FIREBASE_auth_uri,
-//   "token_uri": process.env.FIREBASE_token_uri,
-//   "auth_provider_x509_cert_url": process.env.FIREBASE_auth_provider_x509_cert_url,
-//   "client_x509_cert_url": process.env.FIREBASE_client_x509_cert_url,
-//   "universe_domain": "googleapis.com"
-// }
-// )
-// });
+admin.initializeApp({
+  credential: admin.credential.cert({
+  "type": "service_account",
+  "project_id": process.env.FIREBASE_projectid,
+  "private_key_id":process.env.FIREBASE_private_key_id,
+  "private_key": process.env.FIREBASE_private_key.replace(/\\n/g, '\n'),
+  "client_email":process.env.FIREBASE_client_email,
+  "client_id": process.env.FIREBASE_client_id,
+  "auth_uri": process.env.FIREBASE_auth_uri,
+  "token_uri": process.env.FIREBASE_token_uri,
+  "auth_provider_x509_cert_url": process.env.FIREBASE_auth_provider_x509_cert_url,
+  "client_x509_cert_url": process.env.FIREBASE_client_x509_cert_url,
+  "universe_domain": "googleapis.com"
+}
+)
+});
 async function createUser(req, res) {
   const { name, email, password } = req.body;
   
