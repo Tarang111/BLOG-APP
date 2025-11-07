@@ -194,6 +194,7 @@ async function googleAuthentication(req,res) {
         email: newUser.email,
          token,
          username,
+       profilePic
      
          
       }})
