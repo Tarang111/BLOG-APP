@@ -157,7 +157,7 @@ async function googleAuthentication(req,res) {
             token, followers:user.followers,
            following:user.following,
             username:user.username,
-            saveblog:user.saveblog
+          
             }})
        
         }
@@ -194,7 +194,7 @@ async function googleAuthentication(req,res) {
         email: newUser.email,
          token,
          username,
-         saveblog,
+     
          
       }})
         
