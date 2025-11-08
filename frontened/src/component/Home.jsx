@@ -107,21 +107,23 @@ useEffect(()=>{
             </div>
             {/* BOOKMARK */}
             <div className="">
-                       {(userr.saveblog.includes(blog._id))?<FaBookmark className='cursor-pointer' onClick={(e)=>{bookmark(blog._id)}}/>:<FaRegBookmark className='cursor-pointer'  onClick={()=>{bookmark(blog._id)}}/>}
+                       {(userr?.saveblog?.includes(blog._id))?<FaBookmark className='cursor-pointer' onClick={(e)=>{bookmark(blog._id)}}/>:<FaRegBookmark className='cursor-pointer'  onClick={()=>{bookmark(blog._id)}}/>}
             </div>
         
             </div>
         
 
            <div className=" flex gap-2 w-[90%] overflow-hidden ">
-                 {blog.tags[0].length>0 &&blog.tags[0].split(",").map((item,index)=>(
-                      <p className="border-2 p-2 w-fit rounded-2xl text-[10px] flex justify-center items-center gap-2 bg-black text-white font-bold">#{item} 
-                     
-                      </p>
-                         
-                  )
-          
-                  )}
+                {blog?.tags?.length > 0 && blog.tags[0] &&
+  blog.tags[0].split(",").map((item, index) => (
+    <p
+      key={index}
+      className="border-2 p-2 w-fit rounded-2xl text-[10px] flex justify-center items-center gap-2 bg-black text-white font-bold"
+    >
+      #{item}
+    </p>
+  ))
+}
            </div>
 
           </div>
