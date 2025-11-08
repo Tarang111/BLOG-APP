@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import axios from 'axios'
 import toast from 'react-hot-toast'
@@ -8,49 +8,44 @@ import { useNavigate } from 'react-router-dom'
 function Editprofile() {
   const dispatch = useDispatch()
   const userData = useSelector(slice => slice.user)
-  const { bio, profilePic, name, username,showlike, token,id,showsave } = userData
-  const navigate=useNavigate()
- 
-  
+  const { bio, profilePic, name, username, showlike, showsave, token, id } = userData
+  const navigate = useNavigate()
+
   const [newuserdata, setuserdata] = useState({
     bio: bio || '',
     profilePic: profilePic || '',
     name: name || '',
     username: username || '',
-    showlike:showlike||true,
-    showsave:showsave||true,
+    showlike: showlike ?? true,
+    showsave: showsave ?? true,
   })
-useEffect(()=>{},[userData])
 
   const [loading, setLoading] = useState(false)
- const [removePic, setRemovePic] = useState(false)
+  const [removePic, setRemovePic] = useState(false)
 
-const handleRemove = () => {
-  setuserdata(prev => ({ ...prev, profilePic: '' }))
-  setRemovePic(true)
-  const fileInput = document.getElementById('image')
-  if (fileInput) fileInput.value = ''
-}
+  // ✅ Remove picture
+  const handleRemove = () => {
+    setuserdata(prev => ({ ...prev, profilePic: '' }))
+    setRemovePic(true)
+    const fileInput = document.getElementById('image')
+    if (fileInput) fileInput.value = ''
+  }
 
   // ✅ Handle image upload
   const handleImageChange = (e) => {
     const file = e.target.files[0]
     if (file) {
-      setuserdata({ ...newuserdata, profilePic: file })
+      setuserdata(prev => ({ ...prev, profilePic: file }))
     }
-    else{
-       setuserdata({ ...newuserdata})
-    }
-   
   }
 
-  // ✅ Handle input change
+  // ✅ Handle text input
   const handleChange = (e) => {
     const { name, value } = e.target
-    setuserdata({ ...newuserdata, [name]: value })
+    setuserdata(prev => ({ ...prev, [name]: value }))
   }
 
-  // ✅ Handle form submission
+  // ✅ Submit form
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -60,20 +55,16 @@ const handleRemove = () => {
     formData.append('bio', newuserdata.bio)
     formData.append('removePic', removePic)
     formData.append('showlike', newuserdata.showlike)
-   formData.append('showsave', newuserdata.showsave)
-   
-    
- if (newuserdata.profilePic && typeof newuserdata.profilePic !== "string") {
-  formData.append("profilePic", newuserdata.profilePic);
-}
+    formData.append('showsave', newuserdata.showsave)
 
-      
-       
+    // ✅ Append image only if file is uploaded
+    if (newuserdata.profilePic && typeof newuserdata.profilePic !== 'string') {
+      formData.append('profilePic', newuserdata.profilePic)
+    }
 
-  
-    
     try {
       setLoading(true)
+
       const res = await axios.patch(
         `${import.meta.env.VITE_BACKENED_URL}/editprofile/${id}`,
         formData,
@@ -84,17 +75,22 @@ const handleRemove = () => {
           }
         }
       )
-     console.log(res);
-        
+
       if (res.data.success) {
-  toast.success('Profile updated successfully ✅')
-  dispatch(login({ ...res.data.user,id:res.data.user._id, token }))
-  navigate(`/profile/${res.data.user.username}`)
-   // ✅ keep your old token
-}
- else {
+        toast.success('Profile updated successfully ✅')
+
+        // ✅ Keep the same token and update user
+        dispatch(login({ 
+          ...res.data.user,
+          id: res.data.user._id,
+          token 
+        }))
+
+        navigate(`/profile/${res.data.user.username}`)
+      } else {
         toast.error(res.data.message || 'Something went wrong')
       }
+
     } catch (err) {
       console.error(err)
       toast.error(err.response?.data?.message || 'Failed to update profile ❌')
@@ -114,9 +110,9 @@ const handleRemove = () => {
           {newuserdata?.profilePic ? (
             <img
               src={
-                typeof newuserdata?.profilePic === 'string'
-                  ? newuserdata?.profilePic
-                  : URL.createObjectURL(newuserdata?.profilePic)
+                typeof newuserdata.profilePic === 'string'
+                  ? newuserdata.profilePic
+                  : URL.createObjectURL(newuserdata.profilePic)
               }
               alt="Profile"
               className="rounded-full w-full h-full object-cover"
@@ -135,9 +131,16 @@ const handleRemove = () => {
           onChange={handleImageChange}
         />
       </div>
-      {/* remove button */}
-     <p className='border-2 p-1.5 w-fit rounded-2xl text-[14px] bg-black text-white font-bold cursor-pointer active:bg-gray-500' onClick={()=>{handleRemove()}}>Remove</p>
-      {/* Name Input */}
+
+      {/* Remove Image Button */}
+      <p
+        className='border-2 p-1.5 w-fit rounded-2xl text-[14px] bg-black text-white font-bold cursor-pointer active:bg-gray-500'
+        onClick={handleRemove}
+      >
+        Remove
+      </p>
+
+      {/* Name */}
       <input
         type="text"
         name="name"
@@ -147,7 +150,7 @@ const handleRemove = () => {
         className="w-full border p-2 rounded-lg outline-none focus:ring focus:ring-blue-300"
       />
 
-      {/* Username Input */}
+      {/* Username */}
       <input
         type="text"
         name="username"
@@ -157,7 +160,7 @@ const handleRemove = () => {
         className="w-full border p-2 rounded-lg outline-none focus:ring focus:ring-blue-300"
       />
 
-      {/* Bio Input */}
+      {/* Bio */}
       <textarea
         name="bio"
         value={newuserdata.bio}
@@ -166,22 +169,44 @@ const handleRemove = () => {
         className="w-full border p-2 rounded-lg outline-none focus:ring focus:ring-blue-300"
         rows="3"
       />
-       
-         <label htmlFor="" className="text-2xl">Show liked blog:-</label>
-        <select id="" name=""  className="border-2 w-50 h-10 p-1 rounded-lg cursor-pointer" onChange={(e)=>{setuserdata((prev)=>({...prev,showlike:e.target.value}))}}>
-            <option value="true">True</option>
-            <option value="false">False</option>
-        </select>
-          <label htmlFor="" className="text-2xl">Show saved blog:-</label>
-        <select id="" name=""  className="border-2 w-50 h-10 p-1 rounded-lg cursor-pointer" onChange={(e)=>{setuserdata((prev)=>({...prev,showsave:e.target.value}))}}>
-            <option value="true">True</option>
-            <option value="false">False</option>
-        </select>
-      {/* Save Button */}
+
+      {/* Show Like */}
+      <label className="text-2xl">Show liked blog:</label>
+      <select
+        className="border-2 w-50 h-10 p-1 rounded-lg cursor-pointer"
+        value={newuserdata.showlike}
+        onChange={(e) =>
+          setuserdata(prev => ({
+            ...prev,
+            showlike: e.target.value === "true"
+          }))
+        }
+      >
+        <option value="true">True</option>
+        <option value="false">False</option>
+      </select>
+
+      {/* Show Save */}
+      <label className="text-2xl">Show saved blog:</label>
+      <select
+        className="border-2 w-50 h-10 p-1 rounded-lg cursor-pointer"
+        value={newuserdata.showsave}
+        onChange={(e) =>
+          setuserdata(prev => ({
+            ...prev,
+            showsave: e.target.value === "true"
+          }))
+        }
+      >
+        <option value="true">True</option>
+        <option value="false">False</option>
+      </select>
+
+      {/* Submit Button */}
       <button
         type="submit"
         disabled={loading}
-       className='border-2 p-1.5 w-fit rounded-2xl text-[14px] bg-black text-white font-bold cursor-pointer active:bg-gray-500'
+        className='border-2 p-1.5 w-fit rounded-2xl text-[14px] bg-black text-white font-bold cursor-pointer active:bg-gray-500'
       >
         {loading ? 'Saving...' : 'Save Changes'}
       </button>
