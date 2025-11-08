@@ -11,7 +11,7 @@ function VerifyUser() {
     async function verifyUser() {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/user/verifyemail/${token}`
+          `${import.meta.env.VITE_BACKENED_URL}/user/verifyemail/${token}`
         );
 
         toast.success(res.data.message);
