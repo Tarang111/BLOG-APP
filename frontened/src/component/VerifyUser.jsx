@@ -1,37 +1,34 @@
-import axios from 'axios'
-import React from 'react'
-import { useEffect } from 'react'
-import toast from 'react-hot-toast'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import axios from "axios";
+import React, { useEffect } from "react";
+import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router-dom";
 
 function VerifyUser() {
-     const {token}=useParams()
-    
-       useEffect(()=>{
-    
-     },[token])
-      const navigate=useNavigate()
-     async function Verifyuser() {
-         try {
-            const res=await axios.get(`${import.meta.env.VITE_BACKENED_URL}/user/verifyemail/${token}`)
-            toast.success(res.data.message)
-            console.log(res);
-            
-            return navigate("/signin")
-         } catch (error) {
-              toast.error(error.response.data.message)
-              console.log(error);
-              
-         } 
-         finally
-         {
-               return navigate("/signin")
-         }
-     }
-       Verifyuser()
-  return (
-    <div>VerifyUser</div>
-  )
+  const { token } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    async function verifyUser() {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/user/verifyemail/${token}`
+        );
+
+        toast.success(res.data.message);
+        console.log(res.data);
+
+        navigate("/signin");
+      } catch (error) {
+        console.log(error);
+        toast.error(error.response?.data?.message || "Verification failed");
+        navigate("/signin");
+      }
+    }
+
+    verifyUser();
+  }, [token, navigate]);
+
+  return <h2 className="text-center mt-12">Verifying your email...</h2>;
 }
 
-export default VerifyUser
+export default VerifyUser;
