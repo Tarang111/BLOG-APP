@@ -62,7 +62,7 @@ if (token && typeof token === "string") {
 
     try {
       const res = await axios.post(
-        `http://localhost:3000/api/v1/blog/like/comment/${commentid}`,
+        `${import.meta.env.VITE_BACKENED_URL}/blog/like/comment/${commentid}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -82,7 +82,7 @@ if (token && typeof token === "string") {
       try {
         console.log(id);
         
-         const res=await axios.delete(`http://localhost:3000/api/v1/blog/delete/comment/${id}`,
+         const res=await axios.delete(`${import.meta.env.VITE_BACKENED_URL}/blog/delete/comment/${id}`,
           { headers: { Authorization: `Bearer ${token}` } }
 )          
         dispatch(deleteComment({id:id}))
@@ -100,7 +100,7 @@ async function editComment(id)
     
    
   try {
-      const res= await axios.patch(`http://localhost:3000/api/v1/blog/edit/comment/${id}`,{commentt},
+      const res= await axios.patch(`${import.meta.env.VITE_BACKENED_URL}/blog/edit/comment/${id}`,{commentt},
         { headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': "application/json"
@@ -121,7 +121,7 @@ async function editComment(id)
 
 async function postcomment() {
     try {
-      const res = await axios.post(`http://localhost:3000/api/v1/blog/comment/${blogId}`, { comment }, {
+      const res = await axios.post(`${import.meta.env.VITE_BACKENED_URL}/blog/comment/${blogId}`, { comment }, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': "application/json"
