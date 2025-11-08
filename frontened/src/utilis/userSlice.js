@@ -1,19 +1,47 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
+// ✅ Load saved user safely
+let savedUser = null;
+try {
+  savedUser = JSON.parse(localStorage.getItem("user"));
+} catch {
+  savedUser = null;
+}
+
+const initialState = savedUser || {
+  token: null,
+  saveblog: [],
+  following: [],
+};
+
+const safeUserForStorage = (user) => {
+  const cleaned = { ...user };
+
+  // ✅ Remove File objects (VERY IMPORTANT)
+  if (cleaned.profilePic instanceof File) {
+    delete cleaned.profilePic;
+  }
+
+  return cleaned;
+};
 
 export const userSlice = createSlice({
-  name: 'userSlice',
-  initialState: JSON.parse(localStorage.getItem('user')) || { token: null, saveblog: [] },
+  name: "userSlice",
+  initialState,
   reducers: {
     login(state, action) {
-      const newState = action.payload;
-      localStorage.setItem('user', JSON.stringify(newState));
-      return newState;
+      const newUser = action.payload;
+
+      const safeUser = safeUserForStorage(newUser);
+
+      localStorage.setItem("user", JSON.stringify(safeUser));
+
+      return safeUser;
     },
 
     logout() {
-      localStorage.removeItem('user',{});
-      return {};
+      localStorage.removeItem("user");
+      return { token: null, saveblog: [], following: [] };
     },
 
     setsaveblog(state, action) {
@@ -24,29 +52,31 @@ export const userSlice = createSlice({
 
       if (alreadySaved) {
         state.saveblog = state.saveblog.filter((id) => id !== blogId);
-        localStorage.setItem('user', JSON.stringify(state));
       } else {
         state.saveblog.push(blogId);
-        localStorage.setItem('user', JSON.stringify(state));
       }
+
+      // ✅ Save cleaned version
+      localStorage.setItem("user", JSON.stringify(safeUserForStorage(state)));
     },
-    followuser(state,action)
-    {
-         const { id } = action.payload;
+
+    followuser(state, action) {
+      const { id } = action.payload;
       if (!state.following) state.following = [];
 
-      const alreadyfollowed = state.following.includes(id);
+      const already = state.following.includes(id);
 
-      if (alreadyfollowed) {
-        state.following = state.following.filter((item) => item != id);
-        localStorage.setItem('user', JSON.stringify(state));
+      if (already) {
+        state.following = state.following.filter((f) => f !== id);
       } else {
         state.following.push(id);
-        localStorage.setItem('user', JSON.stringify(state));
       }
-    }
+
+      // ✅ Save cleaned version
+      localStorage.setItem("user", JSON.stringify(safeUserForStorage(state)));
+    },
   },
 });
 
-export const { login, logout, setsaveblog,followuser } = userSlice.actions;
+export const { login, logout, setsaveblog, followuser } = userSlice.actions;
 export default userSlice.reducer;
