@@ -1,69 +1,81 @@
-import React, { useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import axios from 'axios'
-import toast from 'react-hot-toast'
-import { login } from '../utilis/userSlice'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { login } from "../utilis/userSlice";
+import { useNavigate } from "react-router-dom";
 
 function Editprofile() {
-  const dispatch = useDispatch()
-  const userData = useSelector(slice => slice.user)
-  const { bio, profilePic, name, username, showlike, showsave, token, id } = userData
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userData = useSelector((state) => state.user);
+
+  const { bio, profilePic, name, username, showlike, showsave, token, id } =
+    userData;
 
   const [newuserdata, setuserdata] = useState({
-    bio: bio || '',
-    profilePic: profilePic || '',
-    name: name || '',
-    username: username || '',
+    bio: bio || "",
+    name: name || "",
+    username: username || "",
     showlike: showlike ?? true,
     showsave: showsave ?? true,
-  })
+    profilePicFile: null,        // ✅ FILE stored separately
+    profilePicPreview: profilePic || "", // ✅ Preview only
+  });
 
-  const [loading, setLoading] = useState(false)
-  const [removePic, setRemovePic] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [removePic, setRemovePic] = useState(false);
 
-  // ✅ Remove picture
+  // ✅ Remove image
   const handleRemove = () => {
-    setuserdata(prev => ({ ...prev, profilePic: '' }))
-    setRemovePic(true)
-    const fileInput = document.getElementById('image')
-    if (fileInput) fileInput.value = ''
-  }
+    setuserdata((prev) => ({
+      ...prev,
+      profilePicPreview: "",
+      profilePicFile: null,
+    }));
+    setRemovePic(true);
 
-  // ✅ Handle image upload
+    const fileInput = document.getElementById("image");
+    if (fileInput) fileInput.value = "";
+  };
+
+  // ✅ Image change
   const handleImageChange = (e) => {
-    const file = e.target.files[0]
+    const file = e.target.files[0];
     if (file) {
-      setuserdata(prev => ({ ...prev, profilePic: file }))
+      setuserdata((prev) => ({
+        ...prev,
+        profilePicFile: file,
+        profilePicPreview: URL.createObjectURL(file),
+      }));
     }
-  }
+  };
 
-  // ✅ Handle text input
+  // ✅ Input change
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setuserdata(prev => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setuserdata((prev) => ({ ...prev, [name]: value }));
+  };
 
-  // ✅ Submit form
+  // ✅ Form submit
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const formData = new FormData()
-    formData.append('name', newuserdata.name)
-    formData.append('username', newuserdata.username)
-    formData.append('bio', newuserdata.bio)
-    formData.append('removePic', removePic)
-    formData.append('showlike', newuserdata.showlike)
-    formData.append('showsave', newuserdata.showsave)
+    const formData = new FormData();
+    formData.append("name", newuserdata.name);
+    formData.append("username", newuserdata.username);
+    formData.append("bio", newuserdata.bio);
+    formData.append("removePic", removePic);
+    formData.append("showlike", newuserdata.showlike);
+    formData.append("showsave", newuserdata.showsave);
 
-    // ✅ Append image only if file is uploaded
-    if (newuserdata.profilePic && typeof newuserdata.profilePic !== 'string') {
-      formData.append('profilePic', newuserdata.profilePic)
+    // ✅ Only append file
+    if (newuserdata.profilePicFile) {
+      formData.append("profilePic", newuserdata.profilePicFile);
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
 
       const res = await axios.patch(
         `${import.meta.env.VITE_BACKENED_URL}/editprofile/${id}`,
@@ -71,33 +83,32 @@ function Editprofile() {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
-      )
+      );
 
       if (res.data.success) {
-        toast.success('Profile updated successfully ✅')
+        toast.success("Profile updated ✅");
 
-        // ✅ Keep the same token and update user
-        dispatch(login({ 
-          ...res.data.user,
-          id: res.data.user._id,
-          token 
-        }))
+        dispatch(
+          login({
+            ...res.data.user,
+            id: res.data.user._id,
+            token,
+          })
+        );
 
-        navigate(`/profile/${res.data.user.username}`)
+        navigate(`/profile/${res.data.user.username}`);
       } else {
-        toast.error(res.data.message || 'Something went wrong')
+        toast.error(res.data.message || "Update failed ❌");
       }
-
     } catch (err) {
-      console.error(err)
-      toast.error(err.response?.data?.message || 'Failed to update profile ❌')
+      toast.error(err.response?.data?.message || "Failed to update ❌");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <form
@@ -105,20 +116,16 @@ function Editprofile() {
       className="flex flex-col gap-4 items-center p-4 w-full max-w-md mx-auto"
     >
       {/* Profile Image */}
-      <div className="w-[150px] h-[150px] cursor-pointer aspect-square rounded-full overflow-hidden">
+      <div className="w-[150px] h-[150px] cursor-pointer rounded-full overflow-hidden">
         <label htmlFor="image" className="cursor-pointer">
-          {newuserdata?.profilePic ? (
+          {newuserdata.profilePicPreview ? (
             <img
-              src={
-                typeof newuserdata.profilePic === 'string'
-                  ? newuserdata.profilePic
-                  : URL.createObjectURL(newuserdata.profilePic)
-              }
-              alt="Profile"
-              className="rounded-full w-full h-full object-cover"
+              src={newuserdata.profilePicPreview}
+              alt="profile"
+              className="w-full h-full object-cover rounded-full"
             />
           ) : (
-            <div className="w-[150px] h-[150px] bg-white border-2 border-dashed rounded-full flex justify-center items-center text-xl">
+            <div className="w-full h-full bg-white border-2 border-dashed rounded-full flex justify-center items-center">
               Select Image
             </div>
           )}
@@ -126,92 +133,89 @@ function Editprofile() {
         <input
           id="image"
           type="file"
-          accept=".png, .jpeg, .jpg"
+          accept=".jpg,.jpeg,.png"
           className="hidden"
           onChange={handleImageChange}
         />
       </div>
 
-      {/* Remove Image Button */}
       <p
-        className='border-2 p-1.5 w-fit rounded-2xl text-[14px] bg-black text-white font-bold cursor-pointer active:bg-gray-500'
+        className="border-2 p-1 px-3 rounded-xl bg-black text-white cursor-pointer"
         onClick={handleRemove}
       >
         Remove
       </p>
 
-      {/* Name */}
+      {/* Inputs */}
       <input
         type="text"
         name="name"
         value={newuserdata.name}
         onChange={handleChange}
+        className="border p-2 rounded-lg w-full"
         placeholder="Full Name"
-        className="w-full border p-2 rounded-lg outline-none focus:ring focus:ring-blue-300"
       />
 
-      {/* Username */}
       <input
         type="text"
         name="username"
         value={newuserdata.username}
         onChange={handleChange}
+        className="border p-2 rounded-lg w-full"
         placeholder="Username"
-        className="w-full border p-2 rounded-lg outline-none focus:ring focus:ring-blue-300"
       />
 
-      {/* Bio */}
       <textarea
         name="bio"
         value={newuserdata.bio}
         onChange={handleChange}
-        placeholder="Write your bio..."
-        className="w-full border p-2 rounded-lg outline-none focus:ring focus:ring-blue-300"
+        className="border p-2 rounded-lg w-full"
         rows="3"
+        placeholder="Write your bio"
       />
 
       {/* Show Like */}
-      <label className="text-2xl">Show liked blog:</label>
+      <label className="text-xl">Show Liked Blogs</label>
       <select
-        className="border-2 w-50 h-10 p-1 rounded-lg cursor-pointer"
         value={newuserdata.showlike}
         onChange={(e) =>
-          setuserdata(prev => ({
+          setuserdata((prev) => ({
             ...prev,
-            showlike: e.target.value === "true"
+            showlike: e.target.value === "true",
           }))
         }
+        className="border p-2 rounded-lg w-40"
       >
         <option value="true">True</option>
         <option value="false">False</option>
       </select>
 
       {/* Show Save */}
-      <label className="text-2xl">Show saved blog:</label>
+      <label className="text-xl">Show Saved Blogs</label>
       <select
-        className="border-2 w-50 h-10 p-1 rounded-lg cursor-pointer"
         value={newuserdata.showsave}
         onChange={(e) =>
-          setuserdata(prev => ({
+          setuserdata((prev) => ({
             ...prev,
-            showsave: e.target.value === "true"
+            showsave: e.target.value === "true",
           }))
         }
+        className="border p-2 rounded-lg w-40"
       >
         <option value="true">True</option>
         <option value="false">False</option>
       </select>
 
-      {/* Submit Button */}
+      {/* Submit */}
       <button
         type="submit"
         disabled={loading}
-        className='border-2 p-1.5 w-fit rounded-2xl text-[14px] bg-black text-white font-bold cursor-pointer active:bg-gray-500'
+        className="bg-black text-white px-4 py-2 rounded-xl"
       >
-        {loading ? 'Saving...' : 'Save Changes'}
+        {loading ? "Saving..." : "Save Changes"}
       </button>
     </form>
-  )
+  );
 }
 
-export default Editprofile
+export default Editprofile;
