@@ -62,7 +62,8 @@ async function createUser(req, res) {
  
     });
       
-      sendVerificationEmail(name, email, token);
+     await sendVerificationEmail(name, email, token);
+
 
   
   } catch (err) {
