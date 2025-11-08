@@ -75,7 +75,7 @@ const handleRemove = () => {
     try {
       setLoading(true)
       const res = await axios.patch(
-        `http://localhost:3000/api/v1/editprofile/${id}`,
+        `${import.meta.env.VITE_BACKENED_URL}/editprofile/${id}`,
         formData,
         {
           headers: {
